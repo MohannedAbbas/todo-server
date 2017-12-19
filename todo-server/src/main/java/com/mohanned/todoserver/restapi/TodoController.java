@@ -1,5 +1,7 @@
 package com.mohanned.todoserver.restapi;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mohanned.todoserver.models.TaskId;
 import com.mohanned.todoserver.models.TodoList;
 import com.mohanned.todoserver.models.TodoTask;
@@ -7,6 +9,8 @@ import com.mohanned.todoserver.repos.TodoListRepo;
 import com.mohanned.todoserver.repos.TodoTaskRepo;
 import com.mohanned.todoserver.restapi.webmodels.TodoBody;
 import com.mohanned.todoserver.restapi.webmodels.TodoListBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +21,17 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
+@RequestMapping("/api")
 public class TodoController {
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private TodoListRepo todoListRepo;
 
     @Autowired
     private TodoTaskRepo todoTaskRepo;
+
 
     @GetMapping("/lists")
     public
@@ -152,6 +160,12 @@ public class TodoController {
             TodoTask task = todoTaskRepo.findOne(taskIdObj);
 
             if (task != null) {
+
+                try {
+                    logger.info("Found task: {}", new ObjectMapper().writeValueAsString(task));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
                 task.setDescription(todo.getDescription());
                 task.setDone(todo.getDone());
