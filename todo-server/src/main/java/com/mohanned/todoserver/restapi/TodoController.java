@@ -8,9 +8,9 @@ import com.mohanned.todoserver.repos.TodoTaskRepo;
 import com.mohanned.todoserver.restapi.webmodels.TodoBody;
 import com.mohanned.todoserver.restapi.webmodels.TodoListBody;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,8 +24,10 @@ public class TodoController {
     private TodoTaskRepo todoTaskRepo;
 
     @PostMapping("/lists")
-    public @ResponseBody
-    TodoList newList(@RequestBody TodoListBody todoListBody) {
+    public
+    @ResponseBody
+    TodoList
+    newList(@RequestBody TodoListBody todoListBody) {
         if (todoListBody != null) {
             return todoListRepo.save(new TodoList(UUID.randomUUID().toString(), todoListBody.getName()));
         }
@@ -34,8 +36,10 @@ public class TodoController {
     }
 
     @PutMapping("/lists/{listId}")
-    public @ResponseBody
-    TodoList updateList(@RequestParam("listId") String listId, @RequestBody TodoListBody todoListBody) {
+    public
+    @ResponseBody
+    TodoList
+    updateList(@RequestParam("listId") String listId, @RequestBody TodoListBody todoListBody) {
         if (todoListBody != null && listId != null) {
             TodoList list = todoListRepo.findOne(listId);
 
@@ -50,19 +54,20 @@ public class TodoController {
     }
 
     @DeleteMapping("/lists/{listId}")
-    public @ResponseBody
-    String deleteList(@PathVariable("listId") String listId) {
+    public
+    @ResponseBody
+    String
+    deleteList(@PathVariable("listId") String listId) {
 
         if (listId != null) {
             TodoList list = todoListRepo.findOne(listId);
             if (list != null) {
                 todoListRepo.delete(listId);
 
-
                 AtomicInteger childCount = new AtomicInteger(0);
                 TaskId taskId = new TaskId(listId, null);
 
-                Iterable<TodoTask> tasks = todoTaskRepo.findAllByTaskId(taskId);
+                Iterable<TodoTask> tasks = todoTaskRepo.findAllByTaskIdListId(listId);
 
                 tasks.forEach(todoTask -> {
                     todoTaskRepo.delete(todoTask.getTaskId());
@@ -76,8 +81,10 @@ public class TodoController {
     }
 
     @PostMapping("/tasks/{listId}")
-    public @ResponseBody
-    TodoTask newTask(@PathVariable("listId") String listId, @RequestBody TodoBody todo) {
+    public
+    @ResponseBody
+    TodoTask
+    newTask(@PathVariable("listId") String listId, @RequestBody TodoBody todo) {
 
         if (todo != null && listId != null) {
             TaskId taskId = new TaskId();
@@ -93,8 +100,10 @@ public class TodoController {
     }
 
     @PutMapping("/tasks/{listId}/{taskId}")
-    public @ResponseBody
-    TodoTask updateTask(@PathVariable("listId") String listId, @PathVariable("taskId") String taskId, @RequestBody TodoBody todo) {
+    public
+    @ResponseBody
+    TodoTask
+    updateTask(@PathVariable("listId") String listId, @PathVariable("taskId") String taskId, @RequestBody TodoBody todo) {
         if (todo != null && listId != null && taskId != null) {
             TaskId taskIdObj = new TaskId(listId, taskId);
 
@@ -110,8 +119,10 @@ public class TodoController {
     }
 
     @DeleteMapping("/tasks/{listId}/{taskId}")
-    public @ResponseBody
-    String deleteTask(@PathVariable("listId") String listId, @PathVariable("taskId") String taskId) {
+    public
+    @ResponseBody
+    String
+    deleteTask(@PathVariable("listId") String listId, @PathVariable("taskId") String taskId) {
         if (listId != null && taskId != null) {
             TaskId taskIdObj = new TaskId(listId, taskId);
 
