@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +24,18 @@ public class TodoController {
 
     @Autowired
     private TodoTaskRepo todoTaskRepo;
+
+    @GetMapping("/lists")
+    public
+    @ResponseBody
+    List<TodoList>
+    getLists() {
+        List<TodoList> lists = new ArrayList<>();
+
+        todoListRepo.findAll().forEach(todoList -> lists.add(todoList));
+
+        return lists;
+    }
 
     @PostMapping("/lists")
     public
@@ -74,10 +88,34 @@ public class TodoController {
                     childCount.incrementAndGet();
                 });
 
-                return "Deleted list with id:" + listId + ", it had children:" + childCount.get();
+                return "Deleted list with id:" + listId + ", it had tasks:" + childCount.get();
             }
         }
         return "List not deleted, id:" + listId;
+    }
+
+    @GetMapping("/tasks")
+    public
+    @ResponseBody
+    List<TodoTask>
+    getTasks() {
+        List<TodoTask> lists = new ArrayList<>();
+
+        todoTaskRepo.findAll().forEach(todoList -> lists.add(todoList));
+
+        return lists;
+    }
+
+    @GetMapping("/tasks/{listId}")
+    public
+    @ResponseBody
+    List<TodoTask>
+    getTasks(@PathVariable("listId") String listId) {
+        List<TodoTask> lists = new ArrayList<>();
+
+        todoTaskRepo.findAllByTaskIdListId(listId).forEach(todoList -> lists.add(todoList));
+
+        return lists;
     }
 
     @PostMapping("/tasks/{listId}")
@@ -91,7 +129,11 @@ public class TodoController {
             taskId.setListId(listId);
             taskId.setTaskId(UUID.randomUUID().toString());
 
-            TodoTask task = new TodoTask(taskId, todo.getDescription());
+            TodoTask task = new TodoTask();
+
+            task.setTaskId(taskId);
+            task.setDescription(todo.getDescription());
+            task.setDone(todo.getDone());
 
             return todoTaskRepo.save(task);
         }
@@ -110,6 +152,10 @@ public class TodoController {
             TodoTask task = todoTaskRepo.findOne(taskIdObj);
 
             if (task != null) {
+
+                task.setDescription(todo.getDescription());
+                task.setDone(todo.getDone());
+
                 return todoTaskRepo.save(task);
             }
 

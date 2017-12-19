@@ -12,6 +12,7 @@ public class TodoTask {
     private TaskId taskId;
 
     private String description;
+    private Boolean done = false;
 
     public TodoTask() {
     }
@@ -19,6 +20,14 @@ public class TodoTask {
     public TodoTask(TaskId taskId, String description) {
         this.taskId = taskId;
         this.description = description;
+    }
+
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
     }
 
     public TaskId getTaskId() {

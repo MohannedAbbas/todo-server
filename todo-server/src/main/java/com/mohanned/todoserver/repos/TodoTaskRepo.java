@@ -9,7 +9,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface TodoTaskRepo extends CrudRepository<TodoTask, TaskId>{
 
-    Iterable<TodoTask> findAll(Example<TodoTask> example);
-
     Iterable<TodoTask> findAllByTaskIdListId(String listId);
 }
